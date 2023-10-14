@@ -1,6 +1,11 @@
 {
-  "name": "discord.log",
-  "version": "1.0.0",
-  "bin": "./index.js",
-  "repository": "github:seandunaway/discord.log"
+  "name": "@seandunaway/discordlog",
+  "version": "1.0.1",
+  "bin": {
+    "discordlog": "index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seandunaway/discordlog.git"
+  }
 }
