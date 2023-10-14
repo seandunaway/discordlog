@@ -1,0 +1,6 @@
+{
+  "name": "discord.log",
+  "version": "1.0.0",
+  "bin": "./index.js",
+  "repository": "github:seandunaway/discord.log"
+}
