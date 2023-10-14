@@ -82,7 +82,6 @@ while (true) {
 
 
         for (let i in messages) {
-            if (skip) break
 
 
             // fetch channel_name
