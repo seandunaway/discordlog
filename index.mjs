@@ -144,9 +144,11 @@ while (true) {
         }
     }
 
+
     // sleep
 
     await new Promise(function (resolve) {setTimeout(resolve, poll)})
+
 
     skip = false
 }
