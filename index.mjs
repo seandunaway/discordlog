@@ -13,6 +13,7 @@ let {values: args} = parseArgs({options: {
     translate: {short: 't', type: 'boolean'},
     limit: {short: 'l', type: 'string', default: '100'},
     poll: {short: 'p', type: 'string', default: '60'},
+    skip: {short: 's', type: 'boolean'},
     help: {short: 'h', type: 'boolean'},
 }})
 
@@ -21,6 +22,7 @@ let users = args.users?.split(/[\s,]+/) ?? []
 let keywords = args.keywords?.split(/[\s,]+/) ?? []
 let limit = parseInt(/** @type {string} */ (args.limit))
 let poll = parseInt(/** @type {string} */ (args.poll)) * 1000
+let skip = args.skip
 
 if (!args.auth || !channels || args.help) {
     console.error('usage:')
@@ -31,6 +33,7 @@ if (!args.auth || !channels || args.help) {
     console.error('--translate | -t')
     console.error('--limit | -l <fetches>')
     console.error('--poll | -p <seconds>')
+    console.error('--skip | -s')
     console.error('--help | -h')
     process.exit(1)
 }
@@ -73,10 +76,14 @@ while (true) {
         }
 
 
+        if (skip) messages = []
+
+
         // mutate
 
 
         for (let i in messages) {
+            if (skip) break
 
 
             // fetch channel_name
@@ -137,10 +144,11 @@ while (true) {
 
             console.info(`[${messages[i].channel_name}:${messages[i].username}] ${messages[i].content_translated || messages[i].content}`)
         }
-
-
-        // sleep
-
-        await new Promise(function (resolve) {setTimeout(resolve, poll)})
     }
+
+    // sleep
+
+    await new Promise(function (resolve) {setTimeout(resolve, poll)})
+
+    skip = false
 }
