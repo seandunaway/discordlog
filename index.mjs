@@ -26,7 +26,7 @@ if (!args.auth || !channels || args.help) {
     console.error('usage:')
     console.error('--auth | -a <discord_auth> (required)')
     console.error('--channels | -c <channel_ids> (required)')
-    console.error('--users | -u <user_ids | usernames>')
+    console.error('--users | -u <usernames>')
     console.error('--keywords | -k <keywords>')
     console.error('--translate | -t')
     console.error('--limit | -l <fetches>')
