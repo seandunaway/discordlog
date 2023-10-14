@@ -126,7 +126,10 @@ while (true) {
             // translate
 
             if (args.translate) {
-                messages[i].content_translated = `translated: ${messages[i].content}`
+                let response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${messages[i].content}`)
+                let json = await response.json()
+
+                messages[i].content_translated = json[0][0][0]
             }
 
 
