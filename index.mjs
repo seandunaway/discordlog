@@ -64,10 +64,9 @@ while (true) {
                 timestamp,
                 channel_id: message.channel_id,
                 channel_name: undefined,
-                username: message.author.global_name,
+                username: message.author.global_name ?? message.author.username,
                 content: message.content,
                 content_translated: '',
-                filtered: true,
             })
 
             last_timestamp[message.channel_id] = timestamp
@@ -76,46 +75,45 @@ while (true) {
 
         // mutate
 
-        for (let i in messages) {
+
+        messages: for (let i in messages) {
 
 
             // fetch channel_name
 
-            if (channel_name[messages[i].channel_id]) {
-                messages[i]['channel_name'] = channel_name[messages[i].channel_id]
-                continue
+            if (!channel_name[messages[i].channel_id]) {
+                let response = await fetch(`https://discord.com/api/v9/channels/${channel}`, {
+                    headers: {'authorization': args.auth}
+                })
+                let json = await response.json()
+
+                channel_name[messages[i].channel_id] = json.name
             }
 
-            let response = await fetch(`https://discord.com/api/v9/channels/${channel}`, {
-                headers: {'authorization': args.auth}
-            })
-            let json = await response.json()
-
-            channel_name[messages[i].channel_id] = json.name
-            messages[i]['channel_name'] = json.name
+            messages[i]['channel_name'] = channel_name[messages[i].channel_id]
 
 
             // filter users
 
-            let message_username = messages[i].username.toLowerCase()
+            if (users.length) {
+                let message_username = messages[i].username.toLowerCase()
 
-            for (let user of users) {
-                let args_username = user.toLowerCase()
-
-                if (message_username.includes(args_username))
-                    messages[i].filtered = false
+                for (let user of users) {
+                    let args_username = user.toLowerCase()
+                    if (!message_username.includes(args_username)) continue messages
+                }
             }
 
 
             // filter keywords
 
-            let message_content = messages[i].content.toLowerCase()
+            if (keywords.length) {
+                let message_content = messages[i].content.toLowerCase()
 
-            for (let keyword of keywords) {
-                let args_keyword = keyword.toLowerCase()
-
-                if (message_content.includes(args_keyword))
-                    messages[i].filtered = false
+                for (let keyword of keywords) {
+                    let args_keyword = keyword.toLowerCase()
+                    if (!message_content.includes(args_keyword)) continue messages
+                }
             }
 
 
@@ -124,14 +122,11 @@ while (true) {
             if (args.translate) {
                 messages[i].content_translated = `translated: ${messages[i].content}`
             }
-        }
 
 
-        // output
+            // output
 
-        for (let message of messages) {
-            if (message.filtered) continue
-            console.info(`[${message.channel_name}:${message.username}] ${message.content_translated || message.content}`)
+            console.info(`[${messages[i].channel_name}:${messages[i].username}] ${messages[i].content_translated || messages[i].content}`)
         }
 
 
