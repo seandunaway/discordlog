@@ -76,7 +76,7 @@ while (true) {
         // mutate
 
 
-        messages: for (let i in messages) {
+        for (let i in messages) {
 
 
             // fetch channel_name
@@ -96,24 +96,30 @@ while (true) {
             // filter users
 
             if (users.length) {
+                let filter = true
                 let message_username = messages[i].username.toLowerCase()
 
                 for (let user of users) {
                     let args_username = user.toLowerCase()
-                    if (!message_username.includes(args_username)) continue messages
+                    if (message_username.includes(args_username)) filter = false
                 }
+
+                if (filter) continue
             }
 
 
             // filter keywords
 
             if (keywords.length) {
+                let filter = true
                 let message_content = messages[i].content.toLowerCase()
 
                 for (let keyword of keywords) {
                     let args_keyword = keyword.toLowerCase()
-                    if (!message_content.includes(args_keyword)) continue messages
+                    if (message_content.includes(args_keyword)) filter = false
                 }
+
+                if (filter) continue
             }
 
 
