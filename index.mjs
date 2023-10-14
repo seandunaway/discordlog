@@ -41,7 +41,7 @@ if (!args.auth || !channels || args.help) {
 
 // loop
 
-let last_timestamp = {}
+let last_message_id = {}
 let channel_name = {}
 
 while (true) {
@@ -50,21 +50,21 @@ while (true) {
 
         // fetch messages
 
-        let response = await fetch(`https://discord.com/api/v9/channels/${channel}/messages?limit=${limit}`, {
-            headers: {'authorization': args.auth}
-        })
+        let url_messages = `https://discord.com/api/v9/channels/${channel}/messages?limit=${limit}`
+        if (last_message_id[channel]) url_messages += `&after=${last_message_id[channel]}`
+
+        let response = await fetch(url_messages, {headers: {'authorization': args.auth}})
         let json = await response.json()
 
         let messages = []
         for (let i = json.length - 1; i >= 0; i--) {
             let message = json[i]
-            let timestamp = new Date(message.timestamp).getTime()
 
             if (!message.content) continue
-            if (timestamp <= last_timestamp[message.channel_id]) continue
+            if (message.id <= last_message_id[message.channel_id]) continue
 
             messages.push({
-                timestamp,
+                id: message.id,
                 channel_id: message.channel_id,
                 channel_name: undefined,
                 username: message.author.global_name ?? message.author.username,
@@ -72,9 +72,8 @@ while (true) {
                 content_translated: '',
             })
 
-            last_timestamp[message.channel_id] = timestamp
+            last_message_id[message.channel_id] = message.id
         }
-
 
         if (skip) messages = []
 
@@ -89,9 +88,9 @@ while (true) {
             // fetch channel_name
 
             if (!channel_name[messages[i].channel_id]) {
-                let response = await fetch(`https://discord.com/api/v9/channels/${channel}`, {
-                    headers: {'authorization': args.auth}
-                })
+                let url_channel = `https://discord.com/api/v9/channels/${channel}`
+
+                let response = await fetch(url_channel, {headers: {'authorization': args.auth}})
                 let json = await response.json()
 
                 channel_name[messages[i].channel_id] = json.name
