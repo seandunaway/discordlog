@@ -23,7 +23,7 @@ usage:
 ## example
 
 ```
-% discordlog -a <auth> -c 1139364504594042940 -u sean,nick,dan -k buy,sell -t | tee -a trades.log
+% discordlog -a <auth> -c 1139364504594042940 -u dan,nick,sean -k buy,sell | tee -a trades.log
 ```
 
 
